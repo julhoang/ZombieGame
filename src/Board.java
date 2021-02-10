@@ -30,6 +30,7 @@ public class Board extends JPanel implements ActionListener, Runnable {
 	
 	public ArrayList<Bomb> missile;
 	
+	// default constructor
 	public Board() {
 		p = new Dude();
 		
@@ -43,12 +44,12 @@ public class Board extends JPanel implements ActionListener, Runnable {
 		img = i.getImage();
 		time = new Timer(5, this); // update image every 5ms
 		time.start(); // call ActionPerform method		
-	}
+	} // Block constructor
 	
-	
+	// -------------------
+	// reset all variables to start a new game
 	public void newGame() {
 		gameRunning = false;
-		//addKeyListener(new AL());
 		a = false;
 		done2 = false;
 		hitTarget = false;
@@ -67,8 +68,9 @@ public class Board extends JPanel implements ActionListener, Runnable {
 		time.start();
 
 		repaint();
-	}
+	} // newGame
 	
+	// ------------------
 	// THIS IS THE GAME LOOP
 	public void actionPerformed(ActionEvent e) {
 			
@@ -83,25 +85,24 @@ public class Board extends JPanel implements ActionListener, Runnable {
 		
 		// moving missile
 		for (int w = 0; w < missile.size(); w++) {
-             Bomb b = (Bomb) missile.get(w);
-             if (b.getVisible() == true) {
-                 b.move();
-             } else {
-            	 missile.remove(w);
-             }
-        }
+		     Bomb b = (Bomb) missile.get(w);
+		     if (b.getVisible() == true) {
+			 b.move();
+		     } else {
+			 missile.remove(w);
+		     }
+        	} // for
 		
 		repaint();
 		
 	} // actionPerformed
 	
 	
-	
+	// ---------------
 	// PAINT METHOD
 	public void paint(Graphics g) {
 		
-		//p.move(gameRunning);
-		
+		// if game has not begin --> return
 		if ((p.nx == 0 || p.nx2 == 0) && p.x != 75) {
 			return;
 		}
@@ -121,125 +122,121 @@ public class Board extends JPanel implements ActionListener, Runnable {
 			p.nx = 0;
 		}
             
-        if ((p.getX() - 1790) % 2400 == 0) {
-        	p.nx2 = 0;
-        }
-            
-        g2d.drawImage(img, 685 - p.nx2, 0, null);
-        
-        if (p.getX() > 590) {
-            g2d.drawImage(img, 685 - p.nx, 0, null);
-        }
-        
-        gravity();
-        wall();
+		if ((p.getX() - 1790) % 2400 == 0) {
+			p.nx2 = 0;
+		}
+
+		g2d.drawImage(img, 685 - p.nx2, 0, null);
+
+		if (p.getX() > 590) {
+		    g2d.drawImage(img, 685 - p.nx, 0, null);
+		}
+
+		gravity(); // function to handle character jumping movement
+		wall();	// function to check if character has gotten stuck to a wall
    
-	    // -------------------
-        // This session is for printing missile
+	    	// -------------------
+        	// draw missile
        
-        
-        for (int w = 0; w < missile.size(); w++)
-        {
-            //This is how to get a current element in an arrayList
-            //similar to x[2] in a normal array
-             Bomb b = (Bomb) missile.get(w);//draw:s
-             g2d.drawImage(b.getImage(), b.getX(), b.getY(), null);
-        }
-        
-        
-        
-        // -------------------
-        // This session is for printing the "road"
-   
-    // CAN YOU MAKE IT SO THAT THE FIRST 10 SECONDS IS KINDA FLAT?
-    // OFTENLY THE GAME STARTS OUT TOO HARD AND THE PLAYER WILL LOSE RIGHT AWAY
-        g2d.setColor(new Color(0, 0, 0));
-        for(int i = 0; i < table.getRows(); i++) {
-        	for(int j = 0; j < table.getColumns(); j ++) {
-        		if(table.getTable()[i][j] == 1) {
-        			Block temp = new Block(j * 50 - 100, i * 50, "road.png");
-        			g2d.drawImage(temp.getImage(), j * 50 - 2 * (counter % 25), i * 50 - 40, null);
-        		}
-        	}
-        }
-        
-        
-        
-        // -------------------
-        // This session is for printing the zombie
-        // if the zombie hasn't touched the very bottom, print it's true position
-        
-        if (v + p.getHeight() < 410) {
-        	g2d.drawImage(p.getImage(onGround), p.left, v, null);
-        }
-        
-        // if the zombie hit the bomb, ends game
-        if (hitTarget) {
-        	die(g2d);	        
-	        return;
-        }
-        
-        // if the zombie has touched the very bottom, print it at the bottom
-        if (v + p.getHeight() > 410) {
-        	v = 360;
-        	die(g2d);		        
-	        return;
+		for (int w = 0; w < missile.size(); w++) {
+		     Bomb b = (Bomb) missile.get(w);//draw:s
+		     g2d.drawImage(b.getImage(), b.getX(), b.getY(), null);
 		}
         
-        // if the zombie has touched the left side of the screen, ends game
-        if (p.left < -10) {
-        	die(g2d);	
-	        return;
-        }
-        
-        // prints score on the corner
-        if (gameRunning == true) {
-        	g2d.setFont(new Font("Arial",Font.BOLD, 20));
-	        g2d.setColor(Color.BLACK);
-	        g2d.drawString("Distance travelled: " + (p.x - 75), 450, 20);
-       
-	        counter++;
-        }
         
         
-        if(counter % 25 == 0 && counter != 0) {
-        	table.moveBoard();
-        	counter = 0;
-        }        
+		// -------------------
+		// draw the "road"
+   
+		g2d.setColor(new Color(0, 0, 0));
+		for(int i = 0; i < table.getRows(); i++) {
+			for(int j = 0; j < table.getColumns(); j ++) {
+				if(table.getTable()[i][j] == 1) {
+					Block temp = new Block(j * 50 - 100, i * 50, "road.png");
+					g2d.drawImage(temp.getImage(), j * 50 - 2 * (counter % 25), i * 50 - 40, null);
+				}
+			}
+		}
         
-        if(!gameRunning) {
-            g2d.setFont(new Font("Arial",Font.BOLD, 20));
-                g2d.setColor(Color.GREEN);
-                g2d.drawString("Try to get as far as you can without dying!", 125, 100);
-                g2d.drawString("Press the up arrow for a big jump.", 170, 125);
-                g2d.drawString("Press the space bar for a small jump.", 150, 150);
-                g2d.drawString("Press any key to start.", 225, 175);
-            }
+        
+		// -------------------
+		// draw the zombie (the player)
+		
+		// if the zombie hasn't touched the very bottom, print it's true position
+		if (v + p.getHeight() < 410) {
+			g2d.drawImage(p.getImage(onGround), p.left, v, null);
+		}
+
+		// if the zombie hit the bomb, ends game
+		if (hitTarget) {
+			die(g2d);	        
+			return;
+		}
+
+		// if the zombie has touched the very bottom of the screen, print it at the bottom
+		// then ends game
+		if (v + p.getHeight() > 410) {
+			v = 360;
+			die(g2d);		        
+			return;
+		}
+
+		// if the zombie has touched the left side of the screen, ends game
+		if (p.left < -10) {
+			die(g2d);	
+			return;
+		}
+
+		// prints score on the corner
+		if (gameRunning == true) {
+			g2d.setFont(new Font("Arial",Font.BOLD, 20));
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Distance travelled: " + (p.x - 75), 450, 20);
+
+			counter++;
+		}
+
+		// controlling the speed of the terrain
+		if(counter % 25 == 0 && counter != 0) {
+			table.moveBoard();
+			counter = 0;
+		}        
+	
+		// display Start Screen (game instructions)
+		if(!gameRunning) {
+		   	g2d.setFont(new Font("Arial",Font.BOLD, 20));
+			g2d.setColor(Color.GREEN);
+			g2d.drawString("Try to get as far as you can without dying!", 125, 100);
+			g2d.drawString("Press the up arrow for a big jump.", 170, 125);
+			g2d.drawString("Press the space bar for a small jump.", 150, 150);
+			g2d.drawString("Press any key to start.", 225, 175);
+	    	}
         
 	} // paint
 	
+	// -------------
+	// Purpose: to print the end result when game ends
 	public void die(Graphics g2d) {
 		record = Math.max(record, p.x - 75);
 		
 		g2d.drawImage(p.getImage(onGround), p.left, v, null);
 		
 		g2d.setFont(new Font("Arial",Font.BOLD, 30));
-        g2d.setColor(Color.GREEN);
-        g2d.drawString("The record is: " + record, 200, 115);
-		
-    	g2d.setFont(new Font("Arial",Font.BOLD, 30));
-        g2d.setColor(Color.GREEN);
-        g2d.drawString("You died at: " + (p.x-75), 200, 140);
-        
-        g2d.setFont(new Font("Arial",Font.BOLD, 20));
-        g2d.setColor(Color.RED);
-        g2d.drawString("Hit 'R' to restart game.", 210, 165);
-        
-        gameRunning = false;
-        time.stop();
-	}
+		g2d.setColor(Color.GREEN);
+		g2d.drawString("The record is: " + record, 200, 115);
 
-	//stuff here
+		g2d.setFont(new Font("Arial",Font.BOLD, 30));
+		g2d.setColor(Color.GREEN);
+		g2d.drawString("You died at: " + (p.x-75), 200, 140);
+
+		g2d.setFont(new Font("Arial",Font.BOLD, 20));
+		g2d.setColor(Color.RED);
+		g2d.drawString("Hit 'R' to restart game.", 210, 165);
+
+		gameRunning = false;
+		time.stop();
+	} // die
+
 	
 	// AL - ActionListener
 	private class AL extends KeyAdapter {
@@ -298,7 +295,7 @@ public class Board extends JPanel implements ActionListener, Runnable {
 		if(p.left < 150) {
 			p.left++;
 		}
-	}
+	} // wall
 	
 	// -------------------
 	// to control the falling down after a jump
@@ -337,27 +334,24 @@ public class Board extends JPanel implements ActionListener, Runnable {
 	
 		try {
 			for (int w = 0; w < missile.size(); w++) {
-		        
-	             Bomb b = (Bomb) missile.get(w);
-	             Rectangle currentBomb = b.getBounds();
-	             
-	             if (currentBomb.intersects(zombie)) {
-	            	 gameRunning = false;
-	            	 hitTarget = true;
-	            	 time.stop();
-	            	 repaint();
-	             }
-	        }
+				Bomb b = (Bomb) missile.get(w);
+				Rectangle currentBomb = b.getBounds();
+
+				if (currentBomb.intersects(zombie)) {
+					gameRunning = false;
+					hitTarget = true;
+					time.stop();
+					repaint();
+				}
+	        	}
 		} catch (Exception e) {	}
 	       
-	    return gameRunning;
+	    	return gameRunning;
 	} //collidesWith
 
 	
 	@Override
 	public void run() {
-		
-
 		long beforeTime, timeDiff, sleep;
 
 		beforeTime = System.currentTimeMillis();
@@ -381,7 +375,7 @@ public class Board extends JPanel implements ActionListener, Runnable {
 		done = false;
 		h = false;
 		done2 = false;
-	}
+	} // run
 
 
-}
+} // Board class
