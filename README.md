@@ -1,6 +1,8 @@
 # ZombieGame - Zombie in Da City
 2D side scroller game - CS12
 
+![banner](https://github.com/julhoang/ZombieGame/blob/main/zombie_banner.png?raw=true)
+
 This is a joint project with @MatthewSnowdon
 
 Code base learnt from: https://www.youtube.com/watch?v=zCRgJAHWEYA
